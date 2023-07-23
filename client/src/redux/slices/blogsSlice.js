@@ -6,7 +6,8 @@ const initialState = {
   blog: null,
   loading: false,
   error: null,
-  pageItems: 0,
+  page: 1,
+  totalPages: 0,
   status: 200,
   updateButtonLoading: false,
   blogCreated: false,
@@ -19,11 +20,16 @@ const initialState = {
 
 export const getBlogByCat = createAsyncThunk(
   'blogs/getBlogs',
-  async ({category, pageItems}) => {
+  async ({ category, page }) => {
+
+    console.log("PAGEAXIOS=======================>: " + page)
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/blogs/getblogbycat?category=${category}&pageItems=${pageItems}`
+        `http://localhost:5000/api/blogs/getblogbycat/${category}/${page}`
       );
+
+      console.log('DATA=======>', data);
+
       return data;
     } catch (err) {
       return {
@@ -46,9 +52,18 @@ const blogsSlice = createSlice({
       state.loading = action.payload;
     },
     setBlogByCategory: (state, action) => {
-      state.blogs = action.payload;
+      state.blogs = action.payload.blogs;
       state.loading = false;
       state.error = null;
+    },
+    incPage: (state, action) => {
+      state.page += 1;
+    },
+    decPage: (state, action) => {
+      state.page -= 1;
+    },
+    resetPage: (state, action) => {
+      state.page = action.payload;
     },
     setBlog: (state, action) => {
       state.blog = action.payload;
@@ -87,7 +102,9 @@ const blogsSlice = createSlice({
     });
     builder.addCase(getBlogByCat.fulfilled, (state, action) => {
       state.loading = false;
-      state.blogs = action.payload;
+      state.blogs = action.payload.blogs;
+      state.page = Number(action.payload.page);
+      state.totalPages = action.payload.numOfPages;
     });
     builder.addCase(getBlogByCat.rejected, (state, action) => {
       state.loading = false;
@@ -105,5 +122,8 @@ export const {
   blogRemoved,
   setUpdateButtonLoading,
   setError,
+  incPage,
+  decPage,
+  resetPage,
 } = blogsSlice.actions;
 export default blogsSlice.reducer;

@@ -20,9 +20,10 @@ import { Link as ReactLink } from 'react-router-dom';
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { GiWorld } from 'react-icons/gi';
 import { FaTwitter, FaYoutube, FaFacebook, FaInstagram } from 'react-icons/fa';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { MdAdminPanelSettings } from 'react-icons/md';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getBlogByCat } from '../redux/slices/blogsSlice';
+
 
 const Links = [
   {
@@ -45,8 +46,8 @@ const blogLinks = [
     category: 'latest',
   },
   {
-    linkName: 'All Blogs',
-    category: 'Europe',
+    linkName: 'Europe',
+    category: 'europe',
   },
   {
     linkName: 'America',
@@ -80,9 +81,14 @@ const NavLink = ({ path, children }) => (
 );
 
 const NavBar = () => {
+  const dispatch = useDispatch()
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const [logoHover, setLogoHover] = useState(false);
+
+
+ 
+
   return (
     <Box bg={mode('blue.200', 'blue.900')} px={4}>
       <Flex h="16" alignItems={'center'} justifyContent={'space-between'}>
