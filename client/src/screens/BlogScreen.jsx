@@ -105,7 +105,7 @@ export const BlogScreen = () => {
                         </Link>
                       </Text>
                       <Spacer />
-                      <Link as={ReactLink} to={`/${blog._id}`}>
+                      <Link as={ReactLink} to={`/blog/single/${blog._id}`}>
                         Read More...
                       </Link>
                     </Flex>
