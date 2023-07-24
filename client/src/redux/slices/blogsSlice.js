@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+
 const initialState = {
   blogs: [],
   blog: null,
@@ -21,8 +22,7 @@ const initialState = {
 export const getBlogByCat = createAsyncThunk(
   'blogs/getBlogs',
   async ({ category, page }) => {
-
-    console.log("PAGEAXIOS=======================>: " + page)
+    console.log('PAGEAXIOS=======================>: ' + page);
     try {
       const { data } = await axios.get(
         `http://localhost:5000/api/blogs/getblogbycat/${category}/${page}`
@@ -44,6 +44,26 @@ export const getBlogByCat = createAsyncThunk(
   }
 );
 
+export const getSingleBlog = createAsyncThunk('blogs/getBlog', async ({ id }) => {
+  try {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/blogs/getsingleblog/${id}`
+    );
+
+    return data;
+  } catch (err) {
+    return {
+      message:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message
+          ? err.message
+          : 'An unexpected error occurred',
+    };
+
+
+  }
+});
 const blogsSlice = createSlice({
   name: 'blogs',
   initialState,
@@ -107,6 +127,19 @@ const blogsSlice = createSlice({
       state.totalPages = action.payload.numOfPages;
     });
     builder.addCase(getBlogByCat.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+    ///////////////////////////////////////////////////////////////
+    builder.addCase(getSingleBlog.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(getSingleBlog.fulfilled, (state, action) => {
+      state.blog = action.payload;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(getSingleBlog.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });
